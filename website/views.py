@@ -1,12 +1,12 @@
 import csv
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.views import View
 from django.core.cache import cache
 from django.shortcuts import render
 
 class Search(View):
     def get(self, request):
-        context = {}
+        data = {}
         if 'q' in self.request.GET:
             company_name = self.request.GET['q'].upper()
             cols = list(cache.get(next(cache.iter_keys(f"*{company_name}*"))).keys())
@@ -17,11 +17,9 @@ class Search(View):
                     r.append(cache.get(row)[col])
                 rows.append(r)
 
-            context['cols'] = cols
-            context['rows'] = rows
-            context['csv_available'] = company_name
-        return render(request, 'website/index.html', context=context)
-
+            data['cols'] = cols
+            data['rows'] = rows
+        return JsonResponse(data)
 
 class DownloadCSV(View):
     def post(self, request, query):

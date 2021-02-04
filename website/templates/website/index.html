@@ -10,21 +10,27 @@
       integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1"
       crossorigin="anonymous"
     />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
   </head>
   <body>
-    <div>
+    <div id="app">
+      {% verbatim %}
       <nav class="navbar navbar-dark bg-dark">
         <div class="container-fluid">
           <a class="navbar-brand" href="/">Bhav Copy</a>
-          <form id="app" class="d-flex" action="/search" method="get">
+          <form class="d-flex" v-on:submit.prevent="onSubmit">
             <input
               class="form-control me-2"
               type="search"
               name="q"
               placeholder="Company Name"
               aria-label="Search"
-              v-model="message"
+              v-model="query"
             />
             <button class="btn btn-primary" type="submit">Search</button>
           </form>
@@ -33,23 +39,16 @@
       <table class="table table-striped">
         <thead>
           <tr>
-            {% for col in cols %}
-              <th v-for="row in rows">{{ col }}</th>
-            {% endfor %}
+            <th v-for="col in info.cols">{{ col }}</th>
           </tr>
         </thead>
         <tbody>
-          {% for row in rows %}
-          <tr>
-            {% for data in row %}
-              <td>{{ data }}</td>
-            {% endfor %}
+          <tr v-for="row in info.rows">
+            <td v-for="data in row">{{ data }}</td>
           </tr>
-          {% endfor %}
         </tbody>
-        {% if csv_available %}
-          <caption>
-            <form method="POST" action="/download/{{ csv_available }}">
+        <caption v-if="csv_available">
+          <form method="POST" v-bind:action="'/download/' + csv_available">
             <div class="container">
               <div class="row">
                 <button class="btn btn-outline-primary" type="submit">
@@ -58,10 +57,30 @@
                 </button>
               </div>
             </div>
-            </form>
-          </caption>
-        {% endif %}
+          </form>
+        </caption>
       </table>
+      {% endverbatim %}
     </div>
+    <script>
+      var vm = new Vue({
+        el: "#app",
+        data() {
+          return {
+            query: "",
+            info: "",
+            csv_available: ""
+          };
+        },
+        methods: {
+          onSubmit() {
+            axios.get("/search?q=" + this.query).then(response => {
+              this.info = response.data;
+              this.csv_available = this.query;
+            });
+          }
+        }
+      });
+    </script>
   </body>
 </html>
