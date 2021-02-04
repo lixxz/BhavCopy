@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Bhav Copy</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  </head>
+  <body>
+    <div>
+      <nav class="navbar navbar-dark bg-dark">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="/">Bhav Copy</a>
+          <form id="app" class="d-flex" action="/search" method="get">
+            <input
+              class="form-control me-2"
+              type="search"
+              name="q"
+              placeholder="Company Name"
+              aria-label="Search"
+              v-model="message"
+            />
+            <button class="btn btn-primary" type="submit">Search</button>
+          </form>
+        </div>
+      </nav>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            {% for col in cols %}
+              <th v-for="row in rows">{{ col }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in rows %}
+          <tr>
+            {% for data in row %}
+              <td>{{ data }}</td>
+            {% endfor %}
+          </tr>
+          {% endfor %}
+        </tbody>
+        {% if csv_available %}
+          <caption>
+            <form method="POST" action="/download/{{ csv_available }}">
+            <div class="container">
+              <div class="row">
+                <button class="btn btn-outline-primary" type="submit">
+                  <i class="fa fa-download"></i>
+                  Download CSV
+                </button>
+              </div>
+            </div>
+            </form>
+          </caption>
+        {% endif %}
+      </table>
+    </div>
+  </body>
+</html>
